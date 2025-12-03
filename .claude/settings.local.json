@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rbenv install:*)",
+      "Bash(brew --prefix:*)",
+      "Bash(rbenv versions:*)",
+      "Bash(gem install:*)",
+      "Bash(bundle install:*)",
+      "Bash(bun run build)",
+      "Bash(bun run build:css:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
