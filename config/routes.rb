@@ -12,16 +12,32 @@ authenticate :user, lambda { |u| u.admin? } do
   end
 end
 
+  # Authentication
+  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
+
+  # Timeline (root)
+  root to: "posts#index"
+
+  # Posts with nested comments and likes
+  resources :posts do
+    resources :comments, only: [:create, :destroy]
+    resource :like, only: [:create, :destroy]
+  end
+
+  # Calendar
+  resources :calendar, only: [:index, :show] do
+    collection do
+      get :events
+    end
+  end
+
+  # User profiles
+  resources :users, only: [:show, :edit, :update]
+
+  # Existing
   resources :notifications, only: [:index]
   resources :announcements, only: [:index]
-  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
-  root to: 'home#index'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Defines the root path route ("/")
-  # root "posts#index"
 end
