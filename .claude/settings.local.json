@@ -34,7 +34,9 @@
       "Bash(bin/rails routes:*)",
       "Bash(bin/rails runner:*)",
       "Bash(bin/dev:*)",
-      "Bash(bin/rails server:*)"
+      "Bash(bin/rails server:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(heroku auth:whoami:*)"
     ],
     "deny": [],
     "ask": []

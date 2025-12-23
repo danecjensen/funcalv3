@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_19_211630) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_22_165507) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "btree_gist"
   enable_extension "plpgsql"
 
   create_table "action_text_rich_texts", force: :cascade do |t|
@@ -79,6 +80,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_19_211630) do
     t.boolean "all_day", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.tstzrange "occurs_at"
+    t.string "timezone"
+    t.interval "duration"
+    t.index ["occurs_at"], name: "index_events_on_occurs_at_gist", using: :gist
     t.index ["post_id"], name: "index_events_on_post_id", unique: true
   end
 
