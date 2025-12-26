@@ -1,8 +1,15 @@
 class Event < ApplicationRecord
-  belongs_to :post
+  belongs_to :post, optional: true
+  belongs_to :calendar, optional: true
   has_one :creator, through: :post
 
   validates :title, :starts_at, presence: true
+  validate :must_belong_to_calendar_or_post
+
+  # Get the owner of the event (via calendar or post)
+  def owner
+    calendar&.user || creator
+  end
 
   # PostgreSQL range-based scopes (uses GiST index)
   # Finds events that overlap with the given time range
@@ -30,5 +37,11 @@ class Event < ApplicationRecord
 
     end_time = ends_at.presence || starts_at + 1.hour
     self.occurs_at = starts_at...end_time
+  end
+
+  def must_belong_to_calendar_or_post
+    if calendar_id.blank? && post_id.blank?
+      errors.add(:base, "Event must belong to either a calendar or a post")
+    end
   end
 end
