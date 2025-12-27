@@ -35,16 +35,16 @@ class EventPolicy < ApplicationPolicy
 
   class Scope < Scope
     def resolve
-      # Show events from: owned calendars, subscribed calendars, public calendars, or posts
+      # Show events from: owned calendars, subscribed calendars, published calendars, or posts
       if user
-        scope.left_joins(calendar: :calendar_subscriptions)
+        scope.left_joins(calendar: [:calendar_subscriptions, :publication])
              .left_joins(:post)
-             .where("calendars.user_id = ? OR calendars.public = ? OR calendar_subscriptions.user_id = ? OR events.post_id IS NOT NULL",
-                    user.id, true, user.id)
+             .where("calendars.user_id = ? OR calendar_publications.id IS NOT NULL OR calendar_subscriptions.user_id = ? OR events.post_id IS NOT NULL",
+                    user.id, user.id)
              .distinct
       else
-        scope.left_joins(:calendar)
-             .where("calendars.public = ? OR events.post_id IS NOT NULL", true)
+        scope.left_joins(calendar: :publication)
+             .where("calendar_publications.id IS NOT NULL OR events.post_id IS NOT NULL")
              .distinct
       end
     end

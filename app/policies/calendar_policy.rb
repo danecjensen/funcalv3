@@ -32,14 +32,14 @@ class CalendarPolicy < ApplicationPolicy
 
   class Scope < Scope
     def resolve
-      # Show calendars that are: owned by user, subscribed to, or public
+      # Show calendars that are: owned by user, subscribed to, or published
       if user
-        scope.left_joins(:calendar_subscriptions)
-             .where("calendars.user_id = ? OR calendars.public = ? OR calendar_subscriptions.user_id = ?",
-                    user.id, true, user.id)
+        scope.left_joins(:calendar_subscriptions, :publication)
+             .where("calendars.user_id = ? OR calendar_publications.id IS NOT NULL OR calendar_subscriptions.user_id = ?",
+                    user.id, user.id)
              .distinct
       else
-        scope.where(public: true)
+        scope.published
       end
     end
   end

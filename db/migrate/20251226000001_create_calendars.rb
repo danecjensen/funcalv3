@@ -5,7 +5,6 @@ class CreateCalendars < ActiveRecord::Migration[7.1]
       t.text :description
       t.references :user, null: false, foreign_key: true
       t.string :color, default: '#3788d8'
-      t.boolean :public, default: false
 
       t.timestamps
     end
