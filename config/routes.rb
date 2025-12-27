@@ -24,11 +24,17 @@ end
     resource :like, only: [:create, :destroy]
   end
 
-  # Calendar
+  # Calendar view (legacy for FullCalendar integration)
   resources :calendar, only: [:index, :show] do
     collection do
       get :events
     end
+  end
+
+  # Calendars with nested events and following
+  resources :calendars do
+    resource :following, controller: "calendar_followings", only: [:create, :destroy]
+    resources :events, controller: "calendars/events"
   end
 
   # User profiles

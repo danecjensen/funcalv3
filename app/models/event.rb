@@ -1,8 +1,12 @@
 class Event < ApplicationRecord
-  belongs_to :post
+  belongs_to :post, optional: true
+  belongs_to :calendar, optional: true
   has_one :creator, through: :post
 
   validates :title, :starts_at, presence: true
+  validate :must_belong_to_post_or_calendar
+
+  delegate :user, to: :calendar, prefix: true, allow_nil: true
 
   # PostgreSQL range-based scopes (uses GiST index)
   # Finds events that overlap with the given time range
@@ -23,7 +27,17 @@ class Event < ApplicationRecord
   # Sync occurs_at when starts_at or ends_at changes
   before_save :sync_occurs_at, if: -> { starts_at_changed? || ends_at_changed? }
 
+  # Scopes for calendar-based queries
+  scope :for_calendar, ->(calendar) { where(calendar: calendar) }
+  scope :for_calendars, ->(calendars) { where(calendar: calendars) }
+
   private
+
+  def must_belong_to_post_or_calendar
+    if post_id.blank? && calendar_id.blank?
+      errors.add(:base, "must belong to either a post or a calendar")
+    end
+  end
 
   def sync_occurs_at
     return unless starts_at.present?
